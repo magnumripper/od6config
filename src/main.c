@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, epixoip.
+ * Copyright 2013, epixoip & magnum.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that redistribution of source
@@ -28,6 +28,8 @@ int _get_fan = 0;
 int _set_fan = 0;
 int _get_temp = 0;
 int _set_temp = 0;
+int _get_voltage = 0;
+int _set_voltage = 0;
 int _power = 0;
 int _clocks = 0;
 int core_clock = 0;
@@ -35,6 +37,7 @@ int mem_clock = 0;
 int fanspeed = 0;
 int power = 0;
 int target = 0;
+int voltage = 0;
 int adapter_cnt = 0;
 int device_list[MAX_DEVS];
 
@@ -43,6 +46,7 @@ enum
 	GET_CLOCKS,
 	GET_FAN,
 	GET_TEMP,
+	GET_VOLTAGE
 };
 
 enum
@@ -51,25 +55,28 @@ enum
 	SET_MEM,
 	SET_FAN,
 	SET_POWER,
-	SET_TEMP
+	SET_TEMP,
+	SET_VOLTAGE
 };
 
 char * const get_subopts[] =
 {
-	[GET_CLOCKS] = "clocks",
-	[GET_FAN]    = "fan",
-	[GET_TEMP]   = "temp",
+	[GET_CLOCKS]  = "clocks",
+	[GET_FAN]     = "fan",
+	[GET_TEMP]    = "temp",
+	[GET_VOLTAGE] = "voltage",
 	NULL
 };
 
 char * const set_subopts[] =
 {
-        [SET_CORE]   = "core",
-        [SET_MEM]    = "mem",
-        [SET_FAN]    = "fan",
-        [SET_POWER]  = "power",
-	[SET_TEMP]   = "temp",
-        NULL
+	[SET_CORE]    = "core",
+	[SET_MEM]     = "mem",
+	[SET_FAN]     = "fan",
+	[SET_POWER]   = "power",
+	[SET_TEMP]    = "temp",
+	[SET_VOLTAGE] = "voltage",
+	NULL
 };
 
 char * const adapter_opts[] = { NULL };
@@ -102,6 +109,7 @@ void print_help ()
 	puts ("    Display various information as read from the device.");
 	puts ("    SUBOPTS contains a comma-separated list of directives.");
 	puts ("    Valid SUBOPTS values:");
+	puts ("	voltage			Current voltage offset");
 	puts ("	clocks			Current core and memory clock values");
 	puts ("	fan			Current fan speed");
 	puts ("	temp			Current temperature in Celsius\n");
@@ -109,8 +117,9 @@ void print_help ()
 	puts ("    Write the specified configuration values to the device.");
 	puts ("    SUBOPTS contains a comma-separated list of config key-value pairs.");
 	puts ("    Valid SUBOPTS values:");
+	puts ("	voltage=<value>		Set the voltage offset");
 	puts ("	core=<value>		Set the core clock frequency");
-	puts ("	mem=<value>		Set the memor clock frequency");
+	puts ("	mem=<value>		Set the memory clock frequency");
 	puts ("	fan=<value>		Set the fan speed percentage");
 	puts ("	power=<value>		Set the PowerTune value");
 	puts ("	temp=<value>		Set the target temperature for PowerTune\n\n");
@@ -186,10 +195,13 @@ int main (int argc, char **argv)
 						case GET_TEMP:
 							_get_temp = 1;
 							break;
+						case GET_VOLTAGE:
+							_get_voltage = 1;
+							break;
 						default:
 							fprintf (stderr, "Syntax error: Unknown suboption for --get: `%s'\n", value);
 							return (5);
-					}		
+					}
 				break;
 			case 's':
 				_set = 1;
@@ -236,11 +248,20 @@ int main (int argc, char **argv)
 						case SET_TEMP:
 							if (value == NULL)
 							{
-								fprintf (stderr, "Syntax error: `power' requires a value.\n");
+								fprintf (stderr, "Syntax error: `temp' requires a value.\n");
 								return (5);
 							}
 							_set_temp = 1;
 							target = atoi (value);
+							break;
+						case SET_VOLTAGE:
+							if (value == NULL)
+							{
+								fprintf (stderr, "Syntax error: `voltage' requires a value.\n");
+								return (5);
+							}
+							_set_voltage = 1;
+							voltage = atoi (value);
 							break;
 						default:
 							fprintf (stderr, "Syntax error: Unknown suboption for --set: `%s'\n", value);
@@ -297,7 +318,7 @@ int main (int argc, char **argv)
 			set_fanspeed (&devices[device_list[i]], devices[device_list[i]].fan_max_percent);
 			set_powertune (&devices[device_list[i]], devices[device_list[i]].pt_max);
 			set_targettemp (&devices[device_list[i]], devices[device_list[i]].target_temp_default);
-		}	
+		}
 		else if (_set)
 		{
 			if (_core && _mem)
@@ -310,6 +331,7 @@ int main (int argc, char **argv)
 			if (_set_fan)   set_fanspeed (&devices[device_list[i]], fanspeed);
 			if (_power) set_powertune (&devices[device_list[i]], power);
 			if (_set_temp) set_targettemp (&devices[device_list[i]], target);
+			if (_set_voltage) set_voltage (&devices[device_list[i]], voltage);
 		}
 
 		if (_get)
@@ -317,6 +339,7 @@ int main (int argc, char **argv)
 			if (_clocks) print_clocks (&devices[device_list[i]]);
 			if (_get_fan)    print_fanspeed (&devices[device_list[i]]);
 			if (_get_temp)   print_temp (&devices[device_list[i]]);
+			if (_get_voltage) print_voltage (&devices[device_list[i]]);
 		}
 
 		printf ("\n");

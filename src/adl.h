@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, epixoip.
+ * Copyright 2013, epixoip & magnum.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that redistribution of source
@@ -36,6 +36,9 @@ typedef int (*ADL_OVERDRIVE6_STATE_SET) (int iAdapterIndex, int iStateType, ADLO
 typedef int (*ADL_OVERDRIVE6_POWERCONTROL_SET) (int iAdapterIndex, int iValue);
 typedef int (*ADL_OVERDRIVE6_TARGETTEMPERATUREDATA_GET) (int iAdapterIndex, int *lpCurrentValue, int *lpDefaultValue);
 typedef int (*ADL_OVERDRIVE6_TARGETTEMPERATUREDATA_SET) (int iAdapterIndex, int iCurrentValue);
+typedef int (*ADL_OVERDRIVE6_VOLTAGECONTROLINFO_GET) (int iAdapterIndex, ADLOD6VoltageControlInfo *lpVoltageControlInfo);
+typedef int (*ADL_OVERDRIVE6_VOLTAGECONTROL_GET) (int iAdapterIndex, int *lpCurrentValue, int *lpDefaultValue);
+typedef int (*ADL_OVERDRIVE6_VOLTAGECONTROL_SET) (int iAdapterIndex, int iValue);
 
 extern ADL_MAIN_CONTROL_CREATE ADL_Main_Control_Create;
 extern ADL_MAIN_CONTROL_DESTROY ADL_Main_Control_Destroy;
@@ -57,3 +60,6 @@ extern ADL_OVERDRIVE6_STATE_SET ADL_Overdrive6_State_Set;
 extern ADL_OVERDRIVE6_POWERCONTROL_SET ADL_Overdrive6_PowerControl_Set;
 extern ADL_OVERDRIVE6_TARGETTEMPERATUREDATA_GET ADL_Overdrive6_TargetTemperatureData_Get;
 extern ADL_OVERDRIVE6_TARGETTEMPERATUREDATA_SET ADL_Overdrive6_TargetTemperatureData_Set;
+extern ADL_OVERDRIVE6_VOLTAGECONTROLINFO_GET ADL_Overdrive6_VoltageControlInfo_Get;
+extern ADL_OVERDRIVE6_VOLTAGECONTROL_GET ADL_Overdrive6_VoltageControl_Get;
+extern ADL_OVERDRIVE6_VOLTAGECONTROL_SET ADL_Overdrive6_VoltageControl_Set;

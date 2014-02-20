@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, epixoip.
+ * Copyright 2013, epixoip & magnum.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that redistribution of source
@@ -29,6 +29,10 @@ typedef struct
 	int temp;
 	int target_temp_current;
 	int target_temp_default;
+
+	int voltage_current;
+	int voltage_default;
+	ADLOD6VoltageControlInfo voltage_info;
 
 	int core_clock_min;
 	int core_clock_max;

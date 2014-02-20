@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, epixoip.
+ * Copyright 2013, epixoip & magnum.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that redistribution of source
@@ -36,6 +36,9 @@ ADL_OVERDRIVE6_STATE_SET ADL_Overdrive6_State_Set;
 ADL_OVERDRIVE6_POWERCONTROL_SET ADL_Overdrive6_PowerControl_Set;
 ADL_OVERDRIVE6_TARGETTEMPERATUREDATA_GET ADL_Overdrive6_TargetTemperatureData_Get;
 ADL_OVERDRIVE6_TARGETTEMPERATUREDATA_SET ADL_Overdrive6_TargetTemperatureData_Set;
+ADL_OVERDRIVE6_VOLTAGECONTROLINFO_GET ADL_Overdrive6_VoltageControlInfo_Get;
+ADL_OVERDRIVE6_VOLTAGECONTROL_GET ADL_Overdrive6_VoltageControl_Get;
+ADL_OVERDRIVE6_VOLTAGECONTROL_SET ADL_Overdrive6_VoltageControl_Set;
 
 void *adl_alloc (int size)
 {
@@ -55,7 +58,8 @@ void *get_func_addr (void *dll, const char *name)
 {
 	void *ptr = dlsym (dll, name);
 
-	if (ptr == NULL && !strstr(name, "ADL_Overdrive6_TargetTemperatureData_"))
+	if (ptr == NULL && !strstr(name, "ADL_Overdrive6_TargetTemperatureData_") &&
+	    !strstr(name, "ADL_Overdrive6_VoltageControl_"))
 	{
 		fprintf (stderr, "Error: function '%s' does not exist in ADL library.\n", name);
 		exit (-1);
@@ -94,6 +98,9 @@ int adl_init ()
 	ADL_Overdrive6_PowerControl_Set = (ADL_OVERDRIVE6_POWERCONTROL_SET) get_func_addr (dll, "ADL_Overdrive6_PowerControl_Set");
 	ADL_Overdrive6_TargetTemperatureData_Get = (ADL_OVERDRIVE6_TARGETTEMPERATUREDATA_GET) get_func_addr (dll, "ADL_Overdrive6_TargetTemperatureData_Get");
 	ADL_Overdrive6_TargetTemperatureData_Set = (ADL_OVERDRIVE6_TARGETTEMPERATUREDATA_SET) get_func_addr (dll, "ADL_Overdrive6_TargetTemperatureData_Set");
+	ADL_Overdrive6_VoltageControlInfo_Get = (ADL_OVERDRIVE6_VOLTAGECONTROLINFO_GET) get_func_addr (dll, "ADL_Overdrive6_VoltageControl_Get");
+	ADL_Overdrive6_VoltageControl_Get = (ADL_OVERDRIVE6_VOLTAGECONTROL_GET) get_func_addr (dll, "ADL_Overdrive6_VoltageControl_Get");
+	ADL_Overdrive6_VoltageControl_Set = (ADL_OVERDRIVE6_VOLTAGECONTROL_SET) get_func_addr (dll, "ADL_Overdrive6_VoltageControl_Set");
 
 	return (0);
 }

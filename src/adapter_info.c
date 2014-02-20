@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, epixoip.
+ * Copyright 2013, epixoip & magnum.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that redistribution of source
@@ -53,6 +53,12 @@ void get_adapter_info (device_t *adapter)
 	adapter->fan_max_percent = fan_caps.iFanMaxPercent;
 
 	ADL_Overdrive6_FanSpeed_Get (adapter->real_id, &fan_info);
+
+	if (ADL_Overdrive6_VoltageControl_Get)
+	{
+		ADL_Overdrive6_VoltageControlInfo_Get(adapter->real_id, &adapter->voltage_info);
+		ADL_Overdrive6_VoltageControl_Get (adapter->real_id, &adapter->voltage_current, &adapter->voltage_default);
+	}
 
 	adapter->fan_rpm_current     = fan_info.iFanSpeedRPM;
 	adapter->fan_percent_current = fan_info.iFanSpeedPercent;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, epixoip.
+ * Copyright 2013, epixoip & magnum.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that redistribution of source
@@ -36,6 +36,20 @@ void print_clocks (device_t *adapter)
 	printf ("    Peak Clocks         : %-d\t\t%-d\n", adapter->core_clock_custom_range_max, adapter->mem_clock_custom_range_max);
 	printf ("    PowerTune TDP       : %-d%%\n", adapter->pt_current);
 	printf ("    GPU Load            : %-d%%\n", adapter->utilization);
+}
+
+void print_voltage (device_t *adapter)
+{
+	if (ADL_Overdrive6_VoltageControl_Get)
+	{
+		printf ("    Voltage offset      : %d mV ", adapter->voltage_current);
+		if (adapter->voltage_current != adapter->voltage_default)
+			printf ("(default: %d mV)", adapter->voltage_default);
+		if (adapter->voltage_info.iStepValue)
+			printf(" - range %d..%d in steps of %d", adapter->voltage_info.iMinValue, adapter->voltage_info.iMaxValue, adapter->voltage_info.iStepValue);
+		puts("");
+	} else
+		printf ("    Failed to get voltage offset!\n");
 }
 
 void set_fanspeed (device_t *adapter, int speed)
@@ -84,7 +98,7 @@ void set_clocks (device_t *adapter, int core, int mem)
 		printf ("    Invalid core clock: `%d'. Clock rate must be a multiple of %d\n", mem, adapter->mem_clock_step);
 		return;
 	}
-		
+
 	custom->iNumberOfPerformanceLevels = 2;
 	custom->aLevels[0].iEngineClock = core * 100;
 	custom->aLevels[1].iEngineClock = core * 100;
@@ -95,6 +109,15 @@ void set_clocks (device_t *adapter, int core, int mem)
 		printf ("    New clocks          : %d Mhz core, %d Mhz memory\n", core, mem);
 	else
 		printf ("    Failed to set clocks!\n");
+}
+
+void set_voltage (device_t *adapter, int voltage)
+{
+	if (ADL_Overdrive6_VoltageControl_Set &&
+	    ADL_Overdrive6_VoltageControl_Set (adapter->real_id, voltage) == ADL_OK)
+		printf ("    New voltage offset  : %d mV\n", voltage);
+	else
+		printf ("    Failed to set voltage offset!\n");
 }
 
 void set_powertune (device_t *adapter, int threshold)
@@ -119,8 +142,7 @@ void set_powertune (device_t *adapter, int threshold)
 
 void set_targettemp (device_t *adapter, int target)
 {
-	if (ADL_Overdrive6_TargetTemperatureData_Get &&
-	    ADL_Overdrive6_TargetTemperatureData_Set &&
+	if (ADL_Overdrive6_TargetTemperatureData_Set &&
 	    ADL_Overdrive6_TargetTemperatureData_Set (adapter->real_id, target) == ADL_OK)
 		printf ("    New target temp     : %d\n", target);
 	else
